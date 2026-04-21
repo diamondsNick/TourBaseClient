@@ -1,0 +1,31 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="MainBackground">#ffffff</SolidColorBrush>
+    <SolidColorBrush x:Key="AdditionalBackground">#445c93</SolidColorBrush>
+    <SolidColorBrush x:Key="InformationalBackground">#bae3e8</SolidColorBrush>
+    <SolidColorBrush x:Key="AccentBackground">#fac716</SolidColorBrush>
+    <SolidColorBrush x:Key="AttentionColor">#e31e24</SolidColorBrush>
+    <SolidColorBrush x:Key="BorderColor">#000000</SolidColorBrush>
+    <SolidColorBrush x:Key="ThemeBrown">#634e42</SolidColorBrush>
+    <SolidColorBrush x:Key="ThemeGray">#878787</SolidColorBrush>
+    <Style TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource AccentBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeBrown}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontFamily" Value="Comic Sans MS"/>
+    </Style>
+    <Style TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Comic Sans MS"/>
+    </Style>
+    <Style TargetType="TextBox">
+        <Setter Property="FontFamily" Value="Comic Sans MS"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+    <Style TargetType="PasswordBox">
+        <Setter Property="FontFamily" Value="Comic Sans MS"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+</ResourceDictionary>

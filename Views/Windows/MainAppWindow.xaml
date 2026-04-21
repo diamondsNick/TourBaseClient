@@ -1,0 +1,103 @@
+﻿<Window x:Class="TourAgency2018.Views.Windows.MainAppWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TourAgency2018.Views.Windows"
+        mc:Ignorable="d"
+        Icon="/Resources/логотип.png"
+        Title="Туристическое агенство 2018" 
+        WindowStartupLocation="CenterScreen"
+        MinHeight="450" MinWidth="1400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="63"/>
+            <RowDefinition Height="43"/>
+            <RowDefinition Height="314*"/>
+            <RowDefinition Height="43"/>
+        </Grid.RowDefinitions>
+        <Grid Background="{DynamicResource InformationalBackground}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="111"/>
+                <ColumnDefinition Width="574*"/>
+                <ColumnDefinition Width="115"/>
+            </Grid.ColumnDefinitions>
+            <Image Source="/Resources/логотип.png"
+                   RenderOptions.BitmapScalingMode="HighQuality"
+                   Margin="5"/>
+            <TextBlock Text="Туристическое агенство 2018"
+                       Grid.Column="1"
+                       FontSize="25"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+            <Button Content="Выйти"
+                    x:Name="ExitButton"
+                    Click="ExitButton_Click"
+                    Background="{DynamicResource AttentionColor}"
+                    Margin="10"
+                    Grid.Column="2"
+                    Foreground="{DynamicResource MainBackground}"/>
+        </Grid>
+        <Grid  Grid.Row="1" Background="{DynamicResource AdditionalBackground}">
+            <StackPanel  Orientation="Horizontal" >
+                <Button Content="Туры"
+                        x:Name="ToursButton"
+                        Click="ToursButton_Click"
+                        Margin="5" 
+                        Width="100" />
+                <Button Content="Отели"
+                        x:Name="HotelsButton"
+                        Click="HotelsButton_Click"
+                        Margin="5" 
+                        Width="100"/>
+                <Button Content="Заявки"
+                        x:Name="ApplicationsButton"
+                        Click="ApplicationsButton_Click"
+                        Margin="5" 
+                        Width="100"/>
+                <Button Content="Клиенты"
+                        x:Name="ClientsButton"
+                        Click="ClientsButton_Click"
+                        Margin="5"
+                        Width="100"/>
+                <Button Content="Доп. услуги"
+                        x:Name="ServicesButton"
+                        Click="ServicesButton_Click"
+                        Margin="5"
+                        Width="120"/>
+                <Button Content="Личный кабинет"
+                        x:Name="UserCabinet"
+                        Click="UserCabinet_Click"
+                        Margin="5"
+                        Width="120"/>
+            </StackPanel>
+        </Grid>
+       
+        <Frame 
+            Grid.Row="2" 
+            x:Name="MainAppFrame"
+            NavigationUIVisibility="Hidden"
+            ContentRendered="MainAppFrame_ContentRendered"/>
+        <Grid 
+            Grid.Row="3" 
+            Background="{DynamicResource AdditionalBackground}">
+            <StackPanel  Orientation="Horizontal" >
+                <Button Content="Добавить"
+                    x:Name="AddButton"
+                    Margin="5"
+                    Width="100"
+                    Click="AddButton_Click"/>
+                <Button Content="Редактировать"
+                    x:Name="RedactButton"
+                    Margin="5"
+                    Width="100"
+                    Click="RedactButton_Click"/>
+                <Button Content="Удалить"
+                    x:Name="RemoveButton"
+                    Margin="5"
+                    Width="100"
+                    Click="RemoveButton_Click"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

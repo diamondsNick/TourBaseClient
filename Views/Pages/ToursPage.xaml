@@ -1,0 +1,125 @@
+﻿<Page x:Class="TourAgency2018.Views.Pages.ToursPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:TourAgency2018.Views.Pages"
+      xmlns:uc="clr-namespace:TourAgency2018.Views.UserControls"
+      mc:Ignorable="d" 
+      d:DesignHeight="301" d:DesignWidth="1250"
+      Title="ToursPage"
+      KeepAlive="False">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="10*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="{DynamicResource InformationalBackground}">
+            <StackPanel  Orientation="Horizontal" 
+                         VerticalAlignment="Stretch" 
+                         Margin="10, 0,0,0 "
+                         >
+                <TextBox Text="Поиск..."
+                         x:Name="SearchTextBox"
+                         VerticalAlignment="Stretch"
+                         Margin="10"
+                         VerticalContentAlignment="Center"
+                         TextChanged="SearchTextBox_TextChanged"
+                         GotFocus="SearchTextBox_GotFocus"
+                         Width="200"/>
+                <TextBlock
+                         Margin="10, 0 ,0,0"
+                         Text="Стоимость от"
+                         Width="80"
+                         VerticalAlignment="Center"/>
+                <TextBox
+                         x:Name="BottomPricePoint"
+                         VerticalAlignment="Stretch"
+                         Margin="5,10,5,10"
+                         VerticalContentAlignment="Center"
+                         TextChanged="BottomPricePoint_TextChanged"
+                         PreviewTextInput="BottomPricePoint_PreviewTextInput"
+                         Width="70"/>
+                <TextBlock
+                         Margin="5, 0, 0,0"
+                         Text="до"
+                         Width="20"
+                         VerticalAlignment="Center"/>
+                <TextBox
+                         x:Name="UpperPricePoint"
+                         Margin="0,10,0,10"
+                         VerticalContentAlignment="Center"
+                         VerticalAlignment="Stretch"
+                         TextChanged="UpperPricePoint_TextChanged"
+                         PreviewTextInput="UpperPricePoint_PreviewTextInput"
+                         Width="70"/>
+                <TextBlock
+                         Margin="10, 0, 0,0"
+                         Text="Тип тура"
+                         Width="57"
+                         VerticalAlignment="Center"/>
+                <ComboBox
+                         x:Name="TourTypeBox"
+                         Margin="0,10,0,10"
+                         VerticalContentAlignment="Center"
+                         VerticalAlignment="Stretch"
+                         SelectionChanged="TourTypeBox_SelectionChanged"
+                         Width="100"/>
+                <TextBlock
+                         Margin="10, 0, 0,0"
+                         Text="Дата с"
+                         Width="45"
+                         VerticalAlignment="Center"/>
+                <DatePicker
+                         x:Name="StartDatePicker"
+                         Margin="0,10,0,10"
+                         VerticalContentAlignment="Center"
+                         VerticalAlignment="Stretch"
+                         SelectedDateChanged="StartDatePicker_SelectedDateChanged"
+                         Width="110"/>
+                <TextBlock
+                         Margin="5, 0, 0,0"
+                         Text="по"
+                         Width="20"
+                         VerticalAlignment="Center"/>
+                <DatePicker
+                         x:Name="EndDatePicker"
+                         Margin="0,10,0,10"
+                         VerticalContentAlignment="Center"
+                         VerticalAlignment="Stretch"
+                         SelectedDateChanged="EndDatePicker_SelectedDateChanged"
+                         Width="110"/>
+                <CheckBox x:Name="ShowInactiveBox"
+                          Margin="10,0,0,0"
+                          VerticalAlignment="Center"
+                          Content="Показывать неактивные"
+                          IsChecked="False"
+                          Checked="ShowInactiveBox_Changed"
+                          Unchecked="ShowInactiveBox_Changed"/>
+                <Button
+                         Margin="10,10,0,10"
+                         VerticalAlignment="Stretch"
+                         Padding="10,0"
+                         Click="ClearFilters_Click"
+                         Content="Очистить"/>
+                <TextBlock x:Name="RecordCountText"
+                           Margin="15,0,0,0"
+                           VerticalAlignment="Center"
+                           FontSize="13"
+                           Foreground="Gray"/>
+            </StackPanel>
+        </Grid>
+        <ListBox
+            x:Name="ToursListBox"
+            ItemsSource="{Binding ToursList}"
+            SelectedItem="{Binding SelectedTour, Mode=TwoWay}"
+            HorizontalContentAlignment="Stretch" Grid.Row="1">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <uc:TourUserControl />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Page>

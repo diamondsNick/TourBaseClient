@@ -1,0 +1,83 @@
+<Page x:Class="TourAgency2018.Views.Pages.HotelsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:uc="clr-namespace:TourAgency2018.Views.UserControls"
+      mc:Ignorable="d"
+      d:DesignHeight="301" d:DesignWidth="900"
+      Title="HotelsPage"
+      KeepAlive="False">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="10*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="{DynamicResource InformationalBackground}">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" Margin="10,0,0,0">
+                <TextBox x:Name="SearchTextBox"
+                         Text="Поиск..."
+                         VerticalAlignment="Stretch"
+                         Margin="10"
+                         VerticalContentAlignment="Center"
+                         TextChanged="SearchTextBox_TextChanged"
+                         GotFocus="SearchTextBox_GotFocus"
+                         Width="200"/>
+                <TextBlock Text="Страна"
+                           Margin="10,0,0,0"
+                           Width="45"
+                           VerticalAlignment="Center"/>
+                <ComboBox x:Name="CountryBox"
+                          Margin="0,10,0,10"
+                          VerticalContentAlignment="Center"
+                          VerticalAlignment="Stretch"
+                          SelectionChanged="CountryBox_SelectionChanged"
+                          Width="130"/>
+                <TextBlock Text="Тип питания"
+                           Margin="10,0,0,0"
+                           Width="80"
+                           VerticalAlignment="Center"/>
+                <ComboBox x:Name="MealTypeBox"
+                          Margin="0,10,0,10"
+                          VerticalContentAlignment="Center"
+                          VerticalAlignment="Stretch"
+                          SelectionChanged="MealTypeBox_SelectionChanged"
+                          Width="120"/>
+                <TextBlock Text="Звёзды"
+                           Margin="10,0,0,0"
+                           Width="50"
+                           VerticalAlignment="Center"/>
+                <ComboBox x:Name="StarsBox"
+                          Margin="0,10,0,10"
+                          VerticalContentAlignment="Center"
+                          VerticalAlignment="Stretch"
+                          SelectionChanged="StarsBox_SelectionChanged"
+                          Width="70"/>
+                <Button Margin="10,10,0,10"
+                        VerticalAlignment="Stretch"
+                        Padding="10,0"
+                        Click="ClearFilters_Click"
+                        Content="Очистить"/>
+                <TextBlock x:Name="RecordCountText"
+                           Margin="15,0,0,0"
+                           VerticalAlignment="Center"
+                           FontSize="13"
+                           Foreground="Gray"/>
+            </StackPanel>
+        </Grid>
+
+        <ListBox x:Name="HotelsListBox"
+                 ItemsSource="{Binding HotelsList}"
+                 SelectedItem="{Binding SelectedHotel, Mode=TwoWay}"
+                 HorizontalContentAlignment="Stretch"
+                 Grid.Row="1">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <uc:HotelUserControl/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Page>

@@ -1,0 +1,81 @@
+<Page x:Class="TourAgency2018.Views.Pages.TourDetailPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:conv="clr-namespace:TourAgency2018.ViewModels"
+      mc:Ignorable="d"
+      d:DesignHeight="700" d:DesignWidth="900"
+      Title="TourDetailPage"
+      KeepAlive="False">
+
+    <Page.Resources>
+        <conv:PhotoConverter x:Key="PhotoConverterFromBytes"/>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20">
+
+            <Button Content="← Назад"
+                    HorizontalAlignment="Left"
+                    Padding="15,5"
+                    Margin="0,0,0,20"
+                    Click="BackButton_Click"/>
+
+            <!-- Фото -->
+            <Image x:Name="TourImage"
+                   HorizontalAlignment="Left"
+                   MaxHeight="250" MaxWidth="400"
+                   Stretch="Uniform"
+                   Margin="0,0,0,15"/>
+
+            <!-- Основная информация -->
+            <TextBlock x:Name="TourName" FontSize="24" FontWeight="Bold"
+                       TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+            <TextBlock x:Name="TourId" FontSize="13" Foreground="Gray" Margin="0,0,0,5"/>
+            <TextBlock x:Name="TourStatus" FontSize="15" Margin="0,0,0,5"/>
+            <TextBlock x:Name="TourPrice" FontSize="15" Margin="0,0,0,5"/>
+            <TextBlock x:Name="TourTickets" FontSize="15" Margin="0,0,0,5"/>
+            <TextBlock x:Name="TourDates" FontSize="15" Margin="0,0,0,15"/>
+
+            <!-- Описание -->
+            <TextBlock Text="Описание" FontSize="18" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBlock x:Name="TourDescription" FontSize="15" TextWrapping="Wrap" Margin="0,0,0,15"/>
+
+            <!-- Типы -->
+            <TextBlock Text="Типы тура" FontSize="18" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBlock x:Name="TourTypes" FontSize="15" TextWrapping="Wrap" Margin="0,0,0,15"/>
+
+            <!-- Отели -->
+            <TextBlock Text="Отели" FontSize="18" FontWeight="Bold" Margin="0,0,0,5"/>
+            <ItemsControl x:Name="HotelsList" Margin="0,0,0,5">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="LightGray" BorderThickness="1"
+                                Margin="0,0,0,8" Padding="10">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Stars}" FontSize="14" Margin="0,3,0,0"/>
+                                <TextBlock Text="{Binding Country}" FontSize="14" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock x:Name="NoHotelsText" FontSize="15" Margin="0,0,0,15" Visibility="Collapsed"/>
+
+            <!-- Услуги -->
+            <TextBlock Text="Дополнительные услуги" FontSize="18" FontWeight="Bold" Margin="0,0,0,5"/>
+            <ItemsControl x:Name="ServicesList" Margin="0,0,0,5">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontSize="15" Margin="0,2,0,2"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock x:Name="NoServicesText" FontSize="15" Margin="0,0,0,15" Visibility="Collapsed"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

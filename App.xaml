@@ -1,0 +1,9 @@
+﻿<Application x:Class="TourAgency2018.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:TourAgency2018"
+             StartupUri="/Views/Windows/LoginWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary Source="/Views/Styles/MainThemeDictionary.xaml"/>
+    </Application.Resources>
+</Application>
