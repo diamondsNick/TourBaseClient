@@ -1,9 +1,7 @@
 using System.Data.Entity;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using TourAgency2018.Services;
 
 namespace TourAgency2018.Views.Pages
@@ -28,19 +26,8 @@ namespace TourAgency2018.Views.Pages
 
                 if (tour == null) return;
 
-                // Фото
                 if (tour.ImagePreview != null)
-                {
-                    var image = new BitmapImage();
-                    using (var ms = new MemoryStream(tour.ImagePreview))
-                    {
-                        image.BeginInit();
-                        image.CacheOption = BitmapCacheOption.OnLoad;
-                        image.StreamSource = ms;
-                        image.EndInit();
-                    }
-                    TourImage.Source = image;
-                }
+                    TourImage.Source = ImageService.ToBitmap(tour.ImagePreview);
 
                 // Основная информация
                 TourName.Text = tour.Name;

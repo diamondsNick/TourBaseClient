@@ -71,33 +71,40 @@ namespace TourAgency2018.Views.Pages
                     OriginalHotelsList.Add(h);
             }
 
-            FilterHotels();
+            InitializeFiltering();
         }
 
-        private void FilterHotels()
+        private bool CanFilter()
         {
-            if (CountryBox == null || MealTypeBox == null || StarsBox == null || HotelsList == null) return;
+            if (CountryBox == null || MealTypeBox == null || StarsBox == null || HotelsList == null) return false;
+            return true;
+        }
 
-            HotelsList.Clear();
+        private void InitializeFiltering()
+        {
+            if (CanFilter())
+            {
+                var searchText = SearchTextBox.Text.ToLower();
 
-            IEnumerable<Hotel> hotels = OriginalHotelsList;
+                var selectedCountry = CountryBox.SelectedItem as string;               
 
-            var searchText = SearchTextBox.Text.ToLower();
-            if (!string.IsNullOrWhiteSpace(searchText) && searchText != "поиск...")
-                hotels = hotels.Where(h => h.Name.ToLower().Contains(searchText));
+                var selectedMealType = MealTypeBox.SelectedItem as string;
+                
+                var selectedStars = StarsBox.SelectedItem as string;
+                
 
-            var selectedCountry = CountryBox.SelectedItem as string;
-            if (!string.IsNullOrEmpty(selectedCountry) && selectedCountry != "Все")
-                hotels = hotels.Where(h => h.Country?.Name == selectedCountry);
+                var filteredHotels = FilterHotels(searchText,
+                    selectedCountry,
+                    selectedMealType,
+                    selectedStars,
+                    OriginalHotelsList);
 
-            var selectedMealType = MealTypeBox.SelectedItem as string;
-            if (!string.IsNullOrEmpty(selectedMealType) && selectedMealType != "Все")
-                hotels = hotels.Where(h => h.MealType?.Name == selectedMealType);
+                UpdateHotelsList(filteredHotels);
+            }
+        }
 
-            var selectedStars = StarsBox.SelectedItem as string;
-            if (!string.IsNullOrEmpty(selectedStars) && selectedStars != "Все" && int.TryParse(selectedStars, out var stars))
-                hotels = hotels.Where(h => h.CountOfStars == stars);
-
+        private void UpdateHotelsList(IEnumerable<Hotel> hotels)
+        {
             foreach (var h in hotels)
             {
                 HotelsList.Add(new HotelDTO
@@ -114,16 +121,41 @@ namespace TourAgency2018.Views.Pages
             RecordCountText.Text = $"Найдено: {HotelsList.Count}";
         }
 
+        public IEnumerable<Hotel> FilterHotels(string searchText,
+            string selectedCountry,
+            string selectedMealType,
+            string selectedStars,
+            IEnumerable<Hotel> unfilteredHotels)
+        {
+            HotelsList.Clear();
+
+            IEnumerable<Hotel> hotels = unfilteredHotels;
+
+            if (!string.IsNullOrWhiteSpace(searchText) && searchText != "поиск...")
+                hotels = hotels.Where(h => h.Name.ToLower().Contains(searchText));
+
+            if (!string.IsNullOrEmpty(selectedCountry) && selectedCountry != "Все")
+                hotels = hotels.Where(h => h.Country?.Name == selectedCountry);
+
+            if (!string.IsNullOrEmpty(selectedMealType) && selectedMealType != "Все")
+                hotels = hotels.Where(h => h.MealType?.Name == selectedMealType);
+
+            if (!string.IsNullOrEmpty(selectedStars) && selectedStars != "Все" && int.TryParse(selectedStars, out var stars))
+                hotels = hotels.Where(h => h.CountOfStars == stars);
+
+            return hotels;
+        }
+
         private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             if (SearchTextBox.Text == "Поиск...")
                 SearchTextBox.Text = "";
         }
 
-        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e) => FilterHotels();
-        private void CountryBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => FilterHotels();
-        private void MealTypeBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => FilterHotels();
-        private void StarsBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => FilterHotels();
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e) => InitializeFiltering();
+        private void CountryBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => InitializeFiltering();
+        private void MealTypeBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => InitializeFiltering();
+        private void StarsBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => InitializeFiltering();
 
         private void ClearFilters_Click(object sender, RoutedEventArgs e)
         {
@@ -207,7 +239,7 @@ namespace TourAgency2018.Views.Pages
             }
 
             OriginalHotelsList.Remove(OriginalHotelsList.FirstOrDefault(h => h.Id == SelectedHotel.Id));
-            FilterHotels();
+            InitializeFiltering();
 
             MessageBox.Show("Отель успешно удалён.", "Удаление", MessageBoxButton.OK, MessageBoxImage.Information);
         }

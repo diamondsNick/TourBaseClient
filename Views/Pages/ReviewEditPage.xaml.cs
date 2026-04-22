@@ -1,10 +1,8 @@
 using System;
 using System.Data.Entity;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using TourAgency2018.Models;
 using TourAgency2018.Services;
 
@@ -38,17 +36,7 @@ namespace TourAgency2018.Views.Pages
 
                 var firstImage = hotel.HotelImages.FirstOrDefault();
                 if (firstImage != null)
-                {
-                    var bmp = new BitmapImage();
-                    using (var ms = new MemoryStream(firstImage.ImageSource))
-                    {
-                        bmp.BeginInit();
-                        bmp.CacheOption = BitmapCacheOption.OnLoad;
-                        bmp.StreamSource = ms;
-                        bmp.EndInit();
-                    }
-                    HotelImage.Source = bmp;
-                }
+                    HotelImage.Source = ImageService.ToBitmap(firstImage.ImageSource);
 
                 HotelName.Text = hotel.Name;
                 HotelCountry.Text = $"Страна: {hotel.Country?.Name ?? "Не указано"}";

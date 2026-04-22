@@ -46,28 +46,15 @@ namespace TourAgency2018.Views.Pages
                 OpenLoginAndClose();
                 return;
             }
+            var correctUserPass = SessionService.User.Password;
 
-            if (currentPassword != SessionService.User.Password)
+            try
             {
-                ShowError("Текущий пароль введён неверно.");
-                return;
+                PasswodService.VerifyPasswordChange(newPassword, confirmPassword, correctUserPass, currentPassword);
             }
-
-            if (newPassword.Length < 6 || newPassword.Length > 50)
+            catch (Exception ex)
             {
-                ShowError("Новый пароль должен быть от 6 до 50 символов.");
-                return;
-            }
-
-            if (!_alphanumeric.IsMatch(newPassword))
-            {
-                ShowError("Пароль может содержать только латинские буквы и цифры.");
-                return;
-            }
-
-            if (newPassword != confirmPassword)
-            {
-                ShowError("Пароли не совпадают.");
+                MessageBox.Show(ex.Message, "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -104,6 +91,8 @@ namespace TourAgency2018.Views.Pages
 
             OpenLoginAndClose();
         }
+
+        
 
         private void OpenLoginAndClose()
         {

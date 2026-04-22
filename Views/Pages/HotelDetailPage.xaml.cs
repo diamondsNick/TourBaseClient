@@ -32,15 +32,7 @@ namespace TourAgency2018.Views.Pages
                 var firstImage = hotel.HotelImages.FirstOrDefault();
                 if (firstImage != null)
                 {
-                    var bmp = new BitmapImage();
-                    using (var ms = new MemoryStream(firstImage.ImageSource))
-                    {
-                        bmp.BeginInit();
-                        bmp.CacheOption = BitmapCacheOption.OnLoad;
-                        bmp.StreamSource = ms;
-                        bmp.EndInit();
-                    }
-                    HotelImage.Source = bmp;
+                    HotelImage.Source = ImageService.ToBitmap(firstImage.ImageSource);
                 }
 
                 HotelName.Text = hotel.Name;

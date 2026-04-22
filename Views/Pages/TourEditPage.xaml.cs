@@ -1,12 +1,10 @@
 using System;
-using System;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using TourAgency2018.Models;
 using TourAgency2018.Services;
@@ -88,15 +86,7 @@ namespace TourAgency2018.Views.Pages
 
         private void SetPreviewImage(byte[] bytes)
         {
-            var image = new BitmapImage();
-            using (var ms = new MemoryStream(bytes))
-            {
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = ms;
-                image.EndInit();
-            }
-            PreviewImage.Source = image;
+            PreviewImage.Source = ImageService.ToBitmap(bytes);
         }
 
         private void SelectPhoto_Click(object sender, RoutedEventArgs e)
