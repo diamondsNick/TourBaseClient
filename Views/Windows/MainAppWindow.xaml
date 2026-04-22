@@ -65,6 +65,11 @@
                         Click="ServicesButton_Click"
                         Margin="5"
                         Width="120"/>
+                <Button Content="Отзывы"
+                        x:Name="ReviewsButton"
+                        Click="ReviewsButton_Click"
+                        Margin="5"
+                        Width="100"/>
                 <Button Content="Личный кабинет"
                         x:Name="UserCabinet"
                         Click="UserCabinet_Click"

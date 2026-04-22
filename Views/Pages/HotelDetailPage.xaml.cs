@@ -24,7 +24,7 @@ namespace TourAgency2018.Views.Pages
                     .Include(h => h.Country)
                     .Include(h => h.MealType)
                     .Include(h => h.HotelImages)
-                    .Include(h => h.HotelComments.Select(c => c.Client))
+                    .Include(h => h.HotelComments.Select(c => c.User))
                     .FirstOrDefault(h => h.Id == hotelId);
 
                 if (hotel == null) return;
@@ -53,7 +53,7 @@ namespace TourAgency2018.Views.Pages
                 {
                     CommentsList.ItemsSource = hotel.HotelComments.Select(c => new
                     {
-                        Author = $"{c.Client?.Surname} {c.Client?.Name}",
+                        Author = $"{c.User?.Surname} {c.User?.Name}",
                         Date = c.CreationDate.ToString("dd.MM.yyyy"),
                         c.Text
                     }).ToList();

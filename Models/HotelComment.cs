@@ -21,6 +21,6 @@ namespace TourAgency2018.Models
         public System.DateTime CreationDate { get; set; }
     
         public virtual Hotel Hotel { get; set; }
-        public virtual Client Client { get; set; }
+        public virtual User User { get; set; }
     }
 }

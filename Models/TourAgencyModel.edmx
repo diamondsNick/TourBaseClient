@@ -13,18 +13,6 @@
           <Property Name="ApplicationId" Type="int" Nullable="false" />
           <Property Name="ServiceId" Type="int" Nullable="false" />
         </EntityType>
-        <EntityType Name="Clients">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Surname" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Patronymic" Type="nvarchar" MaxLength="100" />
-          <Property Name="PassportNumber" Type="nvarchar" MaxLength="4" Nullable="false" />
-          <Property Name="PassportSeries" Type="nvarchar" MaxLength="6" Nullable="false" />
-          <Property Name="DateOfBirth" Type="date" Nullable="false" />
-        </EntityType>
         <EntityType Name="Country">
           <Key>
             <PropertyRef Name="Code" />
@@ -139,6 +127,7 @@
           <Property Name="ClientId" Type="int" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" />
           <Property Name="Date" Type="date" />
+          <Property Name="DocumentGenerationStatus" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="TourServices">
           <Key>
@@ -224,18 +213,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_HotelComment_Clients">
-          <End Role="Clients" Type="Self.Clients" Multiplicity="1" />
-          <End Role="HotelComment" Type="Self.HotelComment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Clients">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="HotelComment">
-              <PropertyRef Name="ClientId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_HotelComment_Hotel">
           <End Role="Hotel" Type="Self.Hotel" Multiplicity="1" />
           <End Role="HotelComment" Type="Self.HotelComment" Multiplicity="*" />
@@ -245,6 +222,18 @@
             </Principal>
             <Dependent Role="HotelComment">
               <PropertyRef Name="HotelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HotelComment_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="HotelComment" Type="Self.HotelComment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HotelComment">
+              <PropertyRef Name="ClientId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -308,18 +297,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_TourApplications_Clients">
-          <End Role="Clients" Type="Self.Clients" Multiplicity="1" />
-          <End Role="TourApplications" Type="Self.TourApplications" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Clients">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="TourApplications">
-              <PropertyRef Name="ClientId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_TourApplications_Tour">
           <End Role="Tour" Type="Self.Tour" Multiplicity="1" />
           <End Role="TourApplications" Type="Self.TourApplications" Multiplicity="*" />
@@ -329,6 +306,18 @@
             </Principal>
             <Dependent Role="TourApplications">
               <PropertyRef Name="TourId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TourApplications_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="TourApplications" Type="Self.TourApplications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TourApplications">
+              <PropertyRef Name="ClientId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -394,7 +383,6 @@
         </Association>
         <EntityContainer Name="Хранилище ToursBaseModelContainer">
           <EntitySet Name="ApplicationServices" EntityType="Self.ApplicationServices" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Clients" EntityType="Self.Clients" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Country" EntityType="Self.Country" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Hotel" EntityType="Self.Hotel" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HotelComment" EntityType="Self.HotelComment" Schema="dbo" store:Type="Tables" />
@@ -428,12 +416,12 @@
             <End Role="MealType" EntitySet="MealType" />
             <End Role="Hotel" EntitySet="Hotel" />
           </AssociationSet>
-          <AssociationSet Name="FK_HotelComment_Clients" Association="Self.FK_HotelComment_Clients">
-            <End Role="Clients" EntitySet="Clients" />
-            <End Role="HotelComment" EntitySet="HotelComment" />
-          </AssociationSet>
           <AssociationSet Name="FK_HotelComment_Hotel" Association="Self.FK_HotelComment_Hotel">
             <End Role="Hotel" EntitySet="Hotel" />
+            <End Role="HotelComment" EntitySet="HotelComment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HotelComment_Users" Association="Self.FK_HotelComment_Users">
+            <End Role="Users" EntitySet="Users" />
             <End Role="HotelComment" EntitySet="HotelComment" />
           </AssociationSet>
           <AssociationSet Name="FK_HotelImage_Hotel" Association="Self.FK_HotelImage_Hotel">
@@ -456,12 +444,12 @@
             <End Role="Tour" EntitySet="Tour" />
             <End Role="HotelOfTour" EntitySet="HotelOfTour" />
           </AssociationSet>
-          <AssociationSet Name="FK_TourApplications_Clients" Association="Self.FK_TourApplications_Clients">
-            <End Role="Clients" EntitySet="Clients" />
-            <End Role="TourApplications" EntitySet="TourApplications" />
-          </AssociationSet>
           <AssociationSet Name="FK_TourApplications_Tour" Association="Self.FK_TourApplications_Tour">
             <End Role="Tour" EntitySet="Tour" />
+            <End Role="TourApplications" EntitySet="TourApplications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TourApplications_Users" Association="Self.FK_TourApplications_Users">
+            <End Role="Users" EntitySet="Users" />
             <End Role="TourApplications" EntitySet="TourApplications" />
           </AssociationSet>
           <AssociationSet Name="FK_TourServices_Services" Association="Self.FK_TourServices_Services">
@@ -489,20 +477,6 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ToursBaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Client">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Surname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Patronymic" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PassportNumber" Type="String" MaxLength="4" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PassportSeries" Type="String" MaxLength="6" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="DateOfBirth" Type="DateTime" Nullable="false" Precision="0" />
-          <NavigationProperty Name="TourApplications" Relationship="Self.FK_TourApplications_Clients" FromRole="Clients" ToRole="TourApplications" />
-          <NavigationProperty Name="HotelComments" Relationship="ToursBaseModel.FK_HotelComment_Clients" FromRole="Client" ToRole="HotelComment" />
-        </EntityType>
         <EntityType Name="Country">
           <Key>
             <PropertyRef Name="Code" />
@@ -537,7 +511,7 @@
           <Property Name="ClientId" Type="Int32" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Hotel" Relationship="Self.FK_HotelComment_Hotel" FromRole="HotelComment" ToRole="Hotel" />
-          <NavigationProperty Name="Client" Relationship="ToursBaseModel.FK_HotelComment_Clients" FromRole="HotelComment" ToRole="Client" />
+          <NavigationProperty Name="User" Relationship="ToursBaseModel.FK_HotelComment_Users" FromRole="HotelComment" ToRole="User" />
         </EntityType>
         <EntityType Name="HotelImage">
           <Key>
@@ -582,10 +556,11 @@
           <Property Name="TourId" Type="Int32" Nullable="false" />
           <Property Name="ClientId" Type="Int32" Nullable="false" />
           <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Client" Relationship="Self.FK_TourApplications_Clients" FromRole="TourApplications" ToRole="Clients" />
           <NavigationProperty Name="Tour" Relationship="Self.FK_TourApplications_Tour" FromRole="TourApplications" ToRole="Tour" />
           <Property Name="Date" Type="DateTime" Precision="0" />
+          <Property Name="DocumentGenerationStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Services" Relationship="ToursBaseModel.ApplicationServices" FromRole="TourApplication" ToRole="Service" />
+          <NavigationProperty Name="User" Relationship="ToursBaseModel.FK_TourApplications_Users" FromRole="TourApplication" ToRole="User" />
         </EntityType>
         <EntityType Name="Type">
           <Key>
@@ -608,19 +583,9 @@
           <Property Name="Patronymic" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="RoleId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Role" Relationship="Self.FK_Users_Roles" FromRole="Users" ToRole="Roles" />
+          <NavigationProperty Name="HotelComments" Relationship="ToursBaseModel.FK_HotelComment_Users" FromRole="User" ToRole="HotelComment" />
+          <NavigationProperty Name="TourApplications" Relationship="ToursBaseModel.FK_TourApplications_Users" FromRole="User" ToRole="TourApplication" />
         </EntityType>
-        <Association Name="FK_TourApplications_Clients">
-          <End Role="Clients" Type="Self.Client" Multiplicity="1" />
-          <End Role="TourApplications" Type="Self.TourApplication" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Clients">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="TourApplications">
-              <PropertyRef Name="ClientId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Hotel_Country">
           <End Role="Country" Type="Self.Country" Multiplicity="1" />
           <End Role="Hotel" Type="Self.Hotel" Multiplicity="*" />
@@ -690,7 +655,6 @@
           <End Role="Type" Type="Self.Type" Multiplicity="*" />
         </Association>
         <EntityContainer Name="ToursBaseEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Clients" EntityType="Self.Client" />
           <EntitySet Name="Countries" EntityType="Self.Country" />
           <EntitySet Name="Hotels" EntityType="Self.Hotel" />
           <EntitySet Name="HotelComments" EntityType="Self.HotelComment" />
@@ -700,10 +664,6 @@
           <EntitySet Name="TourApplications" EntityType="Self.TourApplication" />
           <EntitySet Name="Types" EntityType="Self.Type" />
           <EntitySet Name="Users" EntityType="Self.User" />
-          <AssociationSet Name="FK_TourApplications_Clients" Association="Self.FK_TourApplications_Clients">
-            <End Role="Clients" EntitySet="Clients" />
-            <End Role="TourApplications" EntitySet="TourApplications" />
-          </AssociationSet>
           <AssociationSet Name="FK_Hotel_Country" Association="Self.FK_Hotel_Country">
             <End Role="Country" EntitySet="Countries" />
             <End Role="Hotel" EntitySet="Hotels" />
@@ -733,10 +693,6 @@
             <End Role="Type" EntitySet="Types" />
           </AssociationSet>
           <EntitySet Name="Services" EntityType="ToursBaseModel.Service" />
-          <AssociationSet Name="FK_HotelComment_Clients" Association="ToursBaseModel.FK_HotelComment_Clients">
-            <End Role="Client" EntitySet="Clients" />
-            <End Role="HotelComment" EntitySet="HotelComments" />
-          </AssociationSet>
           <AssociationSet Name="TourServices" Association="ToursBaseModel.TourServices">
             <End Role="Service" EntitySet="Services" />
             <End Role="Tour" EntitySet="Tours" />
@@ -756,6 +712,14 @@
             <End Role="TourApplication" EntitySet="TourApplications" />
           </AssociationSet>
           <EntitySet Name="sysdiagrams" EntityType="ToursBaseModel.sysdiagram" />
+          <AssociationSet Name="FK_HotelComment_Users" Association="ToursBaseModel.FK_HotelComment_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="HotelComment" EntitySet="HotelComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TourApplications_Users" Association="ToursBaseModel.FK_TourApplications_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="TourApplication" EntitySet="TourApplications" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Service">
           <Key>
@@ -766,18 +730,6 @@
           <NavigationProperty Name="Tours" Relationship="ToursBaseModel.TourServices" FromRole="Service" ToRole="Tour" />
           <NavigationProperty Name="TourApplications" Relationship="ToursBaseModel.ApplicationServices" FromRole="Service" ToRole="TourApplication" />
         </EntityType>
-        <Association Name="FK_HotelComment_Clients">
-          <End Type="ToursBaseModel.Client" Role="Client" Multiplicity="1" />
-          <End Type="ToursBaseModel.HotelComment" Role="HotelComment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Client">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="HotelComment">
-              <PropertyRef Name="ClientId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="TourServices">
           <End Type="ToursBaseModel.Service" Role="Service" Multiplicity="*" />
           <End Type="ToursBaseModel.Tour" Role="Tour" Multiplicity="*" />
@@ -830,25 +782,36 @@
           <Property Name="version" Type="Int32" />
           <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
+        <Association Name="FK_HotelComment_Users">
+          <End Type="ToursBaseModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToursBaseModel.HotelComment" Role="HotelComment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HotelComment">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TourApplications_Users">
+          <End Type="ToursBaseModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToursBaseModel.TourApplication" Role="TourApplication" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TourApplication">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="Хранилище ToursBaseModelContainer" CdmEntityContainer="ToursBaseEntities">
-          <EntitySetMapping Name="Clients">
-            <EntityTypeMapping TypeName="ToursBaseModel.Client">
-              <MappingFragment StoreEntitySet="Clients">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Surname" ColumnName="Surname" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Patronymic" ColumnName="Patronymic" />
-                <ScalarProperty Name="PassportNumber" ColumnName="PassportNumber" />
-                <ScalarProperty Name="PassportSeries" ColumnName="PassportSeries" />
-                <ScalarProperty Name="DateOfBirth" ColumnName="DateOfBirth" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Countries">
             <EntityTypeMapping TypeName="ToursBaseModel.Country">
               <MappingFragment StoreEntitySet="Country">
@@ -919,6 +882,7 @@
                 <ScalarProperty Name="TourId" ColumnName="TourId" />
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="DocumentGenerationStatus" ColumnName="DocumentGenerationStatus" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

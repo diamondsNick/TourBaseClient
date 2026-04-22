@@ -50,12 +50,10 @@
                   FontSize="14">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="№" Binding="{Binding Id}" Width="55"/>
+                <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="140"/>
                 <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}" Width="160"/>
                 <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="130"/>
                 <DataGridTextColumn Header="Отчество" Binding="{Binding Patronymic}" Width="160"/>
-                <DataGridTextColumn Header="Дата рождения" Binding="{Binding DateOfBirth}" Width="130"/>
-                <DataGridTextColumn Header="Серия" Binding="{Binding PassportSeries}" Width="80"/>
-                <DataGridTextColumn Header="Номер" Binding="{Binding PassportNumber}" Width="100"/>
                 <DataGridTextColumn Header="Заявок" Binding="{Binding ApplicationsCount}" Width="80"/>
             </DataGrid.Columns>
         </DataGrid>

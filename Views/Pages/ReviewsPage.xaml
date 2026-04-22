@@ -1,0 +1,57 @@
+<Page x:Class="TourAgency2018.Views.Pages.ReviewsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d"
+      d:DesignHeight="450" d:DesignWidth="900"
+      Title="Отзывы"
+      KeepAlive="False">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="10,8,10,8" VerticalAlignment="Center">
+            <TextBlock Text="Посещённые отели" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+            <TextBlock x:Name="RecordCountText"
+                       Margin="15,0,0,0"
+                       VerticalAlignment="Center"
+                       FontSize="13"
+                       Foreground="Gray"/>
+        </StackPanel>
+
+        <DataGrid x:Name="HotelsDataGrid"
+                  Grid.Row="1"
+                  Margin="10"
+                  ItemsSource="{Binding HotelsList}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  CanUserResizeRows="False"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal"
+                  RowHeight="40"
+                  FontSize="14">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Отель" Binding="{Binding HotelName}" Width="*"/>
+                <DataGridTextColumn Header="Страна" Binding="{Binding Country}" Width="160"/>
+                <DataGridTextColumn Header="Звёзды" Binding="{Binding Stars}" Width="80"/>
+                <DataGridTextColumn Header="Отзыв" Binding="{Binding ReviewStatus}" Width="150"/>
+                <DataGridTemplateColumn Width="140">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding ButtonLabel}"
+                                    Padding="10,4"
+                                    Margin="4"
+                                    Click="ReviewButton_Click"
+                                    Tag="{Binding HotelId}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>

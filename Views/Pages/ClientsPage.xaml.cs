@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Data.Entity;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -38,41 +39,39 @@ namespace TourAgency2018.Views.Pages
 
             using (var db = DatabaseContext.GetEntities())
             {
-                var query = db.Clients.AsQueryable();
+                var query = db.Users
+                    .Where(u => u.Role.Name == "Клиент")
+                    .AsQueryable();
 
                 if (!isPlaceholder && search.Length > 0)
                 {
-                    query = query.Where(c =>
-                        c.Surname.ToLower().Contains(search) ||
-                        c.Name.ToLower().Contains(search) ||
-                        c.Patronymic.ToLower().Contains(search));
+                    query = query.Where(u =>
+                        u.Surname.ToLower().Contains(search) ||
+                        u.Name.ToLower().Contains(search) ||
+                        (u.Patronymic != null && u.Patronymic.ToLower().Contains(search)));
                 }
 
                 var clients = query
-                    .OrderBy(c => c.Surname)
-                    .ThenBy(c => c.Name)
-                    .Select(c => new
+                    .OrderBy(u => u.Surname)
+                    .ThenBy(u => u.Name)
+                    .Select(u => new
                     {
-                        c.Id,
-                        c.Surname,
-                        c.Name,
-                        c.Patronymic,
-                        c.DateOfBirth,
-                        c.PassportSeries,
-                        c.PassportNumber,
-                        ApplicationsCount = c.TourApplications.Count()
+                        u.Id,
+                        u.Login,
+                        u.Surname,
+                        u.Name,
+                        u.Patronymic,
+                        ApplicationsCount = u.TourApplications.Count()
                     })
                     .ToList()
-                    .Select(c => new ClientDTO
+                    .Select(u => new ClientDTO
                     {
-                        Id = c.Id,
-                        Surname = c.Surname,
-                        Name = c.Name,
-                        Patronymic = c.Patronymic,
-                        DateOfBirth = c.DateOfBirth.ToLongDateString(),
-                        PassportSeries = c.PassportSeries,
-                        PassportNumber = c.PassportNumber,
-                        ApplicationsCount = c.ApplicationsCount
+                        Id = u.Id,
+                        Login = u.Login,
+                        Surname = u.Surname,
+                        Name = u.Name,
+                        Patronymic = u.Patronymic,
+                        ApplicationsCount = u.ApplicationsCount
                     })
                     .ToList();
 
@@ -128,9 +127,9 @@ namespace TourAgency2018.Views.Pages
                 {
                     try
                     {
-                        var client = db.Clients.Find(SelectedClient.Id);
-                        if (client == null) return;
-                        db.Clients.Remove(client);
+                        var user = db.Users.Find(SelectedClient.Id);
+                        if (user == null) return;
+                        db.Users.Remove(user);
                         db.SaveChanges();
                         transaction.Commit();
                     }

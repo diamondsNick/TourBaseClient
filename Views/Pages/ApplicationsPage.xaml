@@ -57,9 +57,20 @@
                   FontSize="14">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="№ заявки" Binding="{Binding Id}" Width="90"/>
-                <DataGridTextColumn Header="Клиент" Binding="{Binding ClientFullName}" Width="220"/>
+                <DataGridTextColumn x:Name="ClientColumn" Header="Клиент" Binding="{Binding ClientFullName}" Width="220"/>
                 <DataGridTextColumn Header="Тур" Binding="{Binding TourName}" Width="*"/>
                 <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="130"/>
+                <DataGridTemplateColumn x:Name="DetailColumn" Width="110">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Подробнее"
+                                    Padding="8,3"
+                                    Margin="4"
+                                    Tag="{Binding Id}"
+                                    Click="DetailButton_Click"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

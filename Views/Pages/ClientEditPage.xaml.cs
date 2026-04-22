@@ -1,7 +1,9 @@
 using System;
-using System.Data.Entity;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using TourAgency2018.Models;
 using TourAgency2018.Services;
 
@@ -9,6 +11,7 @@ namespace TourAgency2018.Views.Pages
 {
     public partial class ClientEditPage : Page
     {
+        private static readonly Regex _alphanumeric = new Regex(@"^[A-Za-z0-9]+$");
         private readonly int? _clientId;
 
         public ClientEditPage(int? clientId = null)
@@ -19,6 +22,7 @@ namespace TourAgency2018.Views.Pages
             if (clientId.HasValue)
             {
                 PageTitle.Text = "Редактирование клиента";
+                PasswordHint.Visibility = Visibility.Visible;
                 LoadClient(clientId.Value);
             }
             else
@@ -31,15 +35,13 @@ namespace TourAgency2018.Views.Pages
         {
             using (var db = DatabaseContext.GetEntities())
             {
-                var client = db.Clients.Find(id);
-                if (client == null) return;
+                var user = db.Users.Find(id);
+                if (user == null) return;
 
-                SurnameBox.Text = client.Surname;
-                NameBox.Text = client.Name;
-                PatronymicBox.Text = client.Patronymic;
-                DateOfBirthPicker.SelectedDate = client.DateOfBirth;
-                PassportSeriesBox.Text = client.PassportSeries;
-                PassportNumberBox.Text = client.PassportNumber;
+                SurnameBox.Text = user.Surname;
+                NameBox.Text = user.Name;
+                PatronymicBox.Text = user.Patronymic;
+                LoginBox.Text = user.Login;
             }
         }
 
@@ -53,33 +55,25 @@ namespace TourAgency2018.Views.Pages
                 return;
             }
 
-            if (!DateOfBirthPicker.SelectedDate.HasValue)
+            var login = LoginBox.Text.Trim();
+            if (string.IsNullOrWhiteSpace(login) || login.Length < 4 || login.Length > 50)
             {
-                MessageBox.Show("Укажите дату рождения.", "Внимание",
+                MessageBox.Show("Логин обязателен и должен быть от 4 до 50 символов.", "Внимание",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (DateOfBirthPicker.SelectedDate.Value > DateTime.Today)
+            var password = PasswordBox.Password;
+            if (!_clientId.HasValue && string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Дата рождения не может быть в будущем.", "Внимание",
+                MessageBox.Show("Укажите пароль для нового клиента.", "Внимание",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            var series = PassportSeriesBox.Text.Trim();
-            var number = PassportNumberBox.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(series) || series.Length > 6)
+            if (!string.IsNullOrEmpty(password) && (password.Length < 6 || password.Length > 50))
             {
-                MessageBox.Show("Серия паспорта обязательна и не должна превышать 6 символов.", "Внимание",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(number) || number.Length > 4)
-            {
-                MessageBox.Show("Номер паспорта обязателен и не должен превышать 4 символа.", "Внимание",
+                MessageBox.Show("Пароль должен быть от 6 до 50 символов.", "Внимание",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -93,25 +87,42 @@ namespace TourAgency2018.Views.Pages
                     {
                         db.Configuration.AutoDetectChangesEnabled = true;
 
-                        Client client;
+                        User user;
 
                         if (_clientId.HasValue)
                         {
-                            client = db.Clients.Find(_clientId.Value);
-                            if (client == null) return;
+                            user = db.Users.Find(_clientId.Value);
+                            if (user == null) return;
                         }
                         else
                         {
-                            client = new Client();
-                            db.Clients.Add(client);
+                            var clientRole = db.Roles.FirstOrDefault(r => r.Name == "Клиент");
+                            if (clientRole == null)
+                            {
+                                MessageBox.Show("Роль «Клиент» не найдена в базе данных.", "Ошибка",
+                                    MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
+                            }
+
+                            var loginExists = db.Users.Any(u => u.Login == login);
+                            if (loginExists)
+                            {
+                                MessageBox.Show("Пользователь с таким логином уже существует.", "Внимание",
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+
+                            user = new User { RoleId = clientRole.Id };
+                            db.Users.Add(user);
                         }
 
-                        client.Surname = SurnameBox.Text.Trim();
-                        client.Name = NameBox.Text.Trim();
-                        client.Patronymic = PatronymicBox.Text.Trim();
-                        client.DateOfBirth = DateOfBirthPicker.SelectedDate.Value;
-                        client.PassportSeries = series;
-                        client.PassportNumber = number;
+                        user.Surname = SurnameBox.Text.Trim();
+                        user.Name = NameBox.Text.Trim();
+                        user.Patronymic = PatronymicBox.Text.Trim();
+                        user.Login = login;
+
+                        if (!string.IsNullOrEmpty(password))
+                            user.Password = password;
 
                         db.SaveChanges();
                         transaction.Commit();
@@ -137,6 +148,11 @@ namespace TourAgency2018.Views.Pages
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             FrameService.Frame.Navigate(new ClientsPage());
+        }
+
+        private void AlphanumericOnly_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !_alphanumeric.IsMatch(e.Text);
         }
     }
 }

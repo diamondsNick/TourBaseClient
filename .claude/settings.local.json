@@ -4,7 +4,8 @@
       "Bash(xargs grep *)",
       "Bash(find *)",
       "Bash(grep -r \"cache\\\\|Cache\\\\|_data\\\\|_list\\\\|_collection\" C:/Users/kolah/source/repos/TourAgency2018 --include=\"*.cs\" ! -path \"*/obj/*\" ! -path \"*/bin/*\")",
-      "Bash(grep *)"
+      "Bash(grep *)",
+      "Bash(git add *)"
     ]
   }
 }

@@ -65,10 +65,41 @@
                 </StackPanel>
             </Border>
 
+            <!-- Секция менеджера: ваучеры -->
+            <Border x:Name="VoucherManagerSection"
+                    BorderBrush="LightGray" BorderThickness="1"
+                    Padding="15" Margin="0,0,0,20"
+                    Visibility="Collapsed">
+                <StackPanel>
+                    <TextBlock Text="Документы" FontSize="15" FontWeight="Bold" Margin="0,0,0,10"/>
+                    <Button x:Name="RequestVouchersButton"
+                            HorizontalAlignment="Left"
+                            Padding="15,8"
+                            Click="RequestVouchers_Click"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Секция клиента: скачать документы -->
+            <Border x:Name="VoucherClientSection"
+                    BorderBrush="LightGray" BorderThickness="1"
+                    Padding="15" Margin="0,0,0,20"
+                    Visibility="Collapsed">
+                <StackPanel>
+                    <TextBlock Text="Мои документы" FontSize="15" FontWeight="Bold" Margin="0,0,0,12"/>
+                    <WrapPanel>
+                        <Button Content="Ваучер на трансфер" Padding="12,7" Margin="0,0,8,8" Click="DownloadVoucher_Click"/>
+                        <Button Content="Ваучер на заселение" Padding="12,7" Margin="0,0,8,8" Click="DownloadVoucher_Click"/>
+                        <Button Content="Билет" Padding="12,7" Margin="0,0,8,8" Click="DownloadVoucher_Click"/>
+                        <Button Content="Страховой полис" Padding="12,7" Margin="0,0,8,8" Click="DownloadVoucher_Click"/>
+                        <Button Content="Виза" Padding="12,7" Margin="0,0,8,8" Click="DownloadVoucher_Click"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
             <!-- Кнопки -->
             <StackPanel Orientation="Horizontal">
-                <Button Content="Сохранить" Padding="20,8" Margin="0,0,10,0" Click="Save_Click"/>
-                <Button Content="Отмена" Padding="20,8" Click="Cancel_Click"/>
+                <Button x:Name="SaveButton" Content="Сохранить" Padding="20,8" Margin="0,0,10,0" Click="Save_Click"/>
+                <Button x:Name="CancelButton" Content="Отмена" Padding="20,8" Click="Cancel_Click"/>
             </StackPanel>
 
         </StackPanel>

@@ -12,21 +12,25 @@ namespace TourAgency2018.Views.Pages
 {
     public partial class ApplicationEditPage : Page
     {
+
         private static readonly string[] Statuses = { "Новая", "В обработке", "Выполнена", "Закрыта" };
 
         private readonly int? _applicationId;
+        private readonly bool _readOnly;
+        private readonly string _userRole = SessionService.User?.Role?.Name;
         private List<Service> _tourServices = new List<Service>();
 
-        public ApplicationEditPage(int? applicationId = null)
+        public ApplicationEditPage(int? applicationId = null, bool readOnly = false)
         {
             InitializeComponent();
             _applicationId = applicationId;
+            _readOnly = readOnly;
 
             LoadCatalogs();
 
             if (applicationId.HasValue)
             {
-                PageTitle.Text = "Редактирование заявки";
+                PageTitle.Text = _readOnly ? "Просмотр заявки" : "Редактирование заявки";
                 FillFields(applicationId.Value);
             }
             else
@@ -34,6 +38,12 @@ namespace TourAgency2018.Views.Pages
                 PageTitle.Text = "Новая заявка";
                 ApplicationDatePicker.SelectedDate = DateTime.Today;
                 StatusBox.SelectedIndex = 0;
+            }
+
+            if (_readOnly)
+            {
+                SaveButton.Visibility = Visibility.Collapsed;
+                CancelButton.Content = "Назад";
             }
         }
 
@@ -44,13 +54,14 @@ namespace TourAgency2018.Views.Pages
 
             using (var db = DatabaseContext.GetEntities())
             {
-                ClientBox.ItemsSource = db.Clients
-                    .OrderBy(c => c.Surname).ThenBy(c => c.Name)
+                ClientBox.ItemsSource = db.Users
+                    .Where(u => u.Role.Name == "Клиент")
+                    .OrderBy(u => u.Surname).ThenBy(u => u.Name)
                     .ToList()
-                    .Select(c => new ClientItem
+                    .Select(u => new ClientItem
                     {
-                        Id = c.Id,
-                        FullName = $"{c.Surname} {c.Name} {c.Patronymic}".Trim()
+                        Id = u.Id,
+                        FullName = $"{u.Surname} {u.Name} {u.Patronymic}".Trim()
                     })
                     .ToList();
 
@@ -79,10 +90,181 @@ namespace TourAgency2018.Views.Pages
                     ?.FirstOrDefault(t => t.Id == app.TourId);
 
                 StatusBox.SelectedItem = app.Status;
+
+                ClientBox.IsEnabled = false;
+                TourBox.IsEnabled = false;
+                StatusBox.IsEnabled = false;
+                ApplicationDatePicker.IsEnabled = false;
                 ApplicationDatePicker.SelectedDate = app.Date ?? DateTime.Today;
 
                 var selectedServiceIds = app.Services.Select(s => s.Id).ToHashSet();
                 SetServicesForTour(app.Tour?.Services?.ToList(), selectedServiceIds);
+
+                if (app.Status != "Новая" || _readOnly)
+                    ServicesList.IsEnabled = false;
+
+                ApplyVoucherSections(app);
+            }
+        }
+
+        private void ApplyVoucherSections(TourApplication app)
+        {
+            var docStatus = app.DocumentGenerationStatus;
+            var hasDoc = docStatus == "Запрошено" || docStatus == "Сгенерировано";
+
+            if (_userRole == "Менеджер")
+            {
+                VoucherManagerSection.Visibility = Visibility.Visible;
+
+                if (docStatus == "Сгенерировано")
+                {
+                    RequestVouchersButton.Content = "Сгенерировано";
+                    RequestVouchersButton.IsEnabled = false;
+                }
+                else if (docStatus == "Запрошено")
+                {
+                    RequestVouchersButton.Content = "Запрошено";
+                    RequestVouchersButton.IsEnabled = false;
+                }
+                else
+                {
+                    RequestVouchersButton.Content = "Запросить ваучеры";
+                    RequestVouchersButton.IsEnabled = app.Status == "В обработке";
+                }
+            }
+            else if (_userRole == "Клиент" && hasDoc)
+            {
+                VoucherClientSection.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void RequestVouchers_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_applicationId.HasValue) return;
+
+            try
+            {
+                using (var db = DatabaseContext.GetEntities())
+                using (var transaction = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        db.Configuration.AutoDetectChangesEnabled = true;
+                        var app = db.TourApplications.FirstOrDefault(a => a.Id == _applicationId.Value);
+                        if (app == null) return;
+                        app.DocumentGenerationStatus = "Запрошено";
+                        db.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DbErrorHandler.Handle(ex);
+                return;
+            }
+
+            RequestVouchersButton.Content = "Запрошено";
+            RequestVouchersButton.IsEnabled = false;
+        }
+
+        private void DownloadVoucher_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_applicationId.HasValue) return;
+
+            var btn = sender as System.Windows.Controls.Button;
+            var label = btn?.Content?.ToString() ?? "";
+
+            var defaultName = label.Replace(" ", "_") + ".pdf";
+
+            var dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = $"Сохранить «{label}»",
+                FileName = defaultName,
+                DefaultExt = ".pdf",
+                Filter = "PDF файлы (*.pdf)|*.pdf"
+            };
+
+            if (dlg.ShowDialog() != true) return;
+
+            try
+            {
+                TourApplication app;
+                using (var db = DatabaseContext.GetEntities())
+                {
+                    app = db.TourApplications
+                        .Include(a => a.User)
+                        .Include(a => a.Tour.Hotels.Select(h => h.Country))
+                        .Include(a => a.Tour.Hotels.Select(h => h.MealType))
+                        .FirstOrDefault(a => a.Id == _applicationId.Value);
+                }
+
+                if (app == null) return;
+
+                switch (label)
+                {
+                    case "Ваучер на трансфер":
+                        PdfGeneratorService.GenerateTransferVoucher(dlg.FileName, app);
+                        break;
+                    case "Ваучер на заселение":
+                        PdfGeneratorService.GenerateHotelVoucher(dlg.FileName, app);
+                        break;
+                    case "Билет":
+                        PdfGeneratorService.GenerateAirTicket(dlg.FileName, app);
+                        break;
+                    case "Страховой полис":
+                        PdfGeneratorService.GenerateInsurancePolicy(dlg.FileName, app);
+                        break;
+                    case "Виза":
+                        PdfGeneratorService.GenerateVisa(dlg.FileName, app);
+                        break;
+                }
+
+                SetDocumentStatusGenerated();
+
+                MessageBox.Show($"Файл сохранён:\n{dlg.FileName}", "Готово",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при создании PDF:\n{ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SetDocumentStatusGenerated()
+        {
+            if (!_applicationId.HasValue) return;
+
+            try
+            {
+                using (var db = DatabaseContext.GetEntities())
+                using (var transaction = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        db.Configuration.AutoDetectChangesEnabled = true;
+                        var app = db.TourApplications.FirstOrDefault(a => a.Id == _applicationId.Value);
+                        if (app == null) return;
+                        app.DocumentGenerationStatus = "Сгенерировано";
+                        db.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DbErrorHandler.Handle(ex);
             }
         }
 

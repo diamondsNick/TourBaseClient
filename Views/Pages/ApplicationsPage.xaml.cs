@@ -14,6 +14,7 @@ namespace TourAgency2018.Views.Pages
     public partial class ApplicationsPage : Page, IAllowRedactPage
     {
         private static readonly string[] Statuses = { "Все", "Новая", "В обработке", "Выполнена", "Закрыта" };
+        private readonly bool _clientView = SessionService.User?.Role?.Name == "Клиент";
 
         public ObservableCollection<ApplicationDTO> ApplicationsList { get; set; } = new ObservableCollection<ApplicationDTO>();
         public ApplicationDTO SelectedApplication { get; set; }
@@ -26,6 +27,16 @@ namespace TourAgency2018.Views.Pages
             foreach (var s in Statuses)
                 StatusFilterBox.Items.Add(s);
             StatusFilterBox.SelectedIndex = 0;
+
+            if (_clientView)
+            {
+                ClientColumn.Visibility = System.Windows.Visibility.Collapsed;
+                SearchTextBox.Visibility = System.Windows.Visibility.Collapsed;
+            }
+            else
+            {
+                DetailColumn.Visibility = System.Windows.Visibility.Collapsed;
+            }
 
             LoadApplications();
 
@@ -49,9 +60,12 @@ namespace TourAgency2018.Views.Pages
             using (var db = DatabaseContext.GetEntities())
             {
                 var query = db.TourApplications
-                    .Include(a => a.Client)
+                    .Include(a => a.User)
                     .Include(a => a.Tour)
                     .AsQueryable();
+
+                if (_clientView)
+                    query = query.Where(a => a.ClientId == SessionService.User.Id);
 
                 if (selectedStatus != null && selectedStatus != "Все")
                     query = query.Where(a => a.Status == selectedStatus);
@@ -60,7 +74,7 @@ namespace TourAgency2018.Views.Pages
 
                 foreach (var a in list)
                 {
-                    var fullName = $"{a.Client?.Surname} {a.Client?.Name} {a.Client?.Patronymic}".Trim();
+                    var fullName = $"{a.User?.Surname} {a.User?.Name} {a.User?.Patronymic}".Trim();
 
                     if (!isPlaceholder && search.Length > 0)
                     {
@@ -102,19 +116,19 @@ namespace TourAgency2018.Views.Pages
         {
             if (SelectedApplication == null)
             {
-                MessageBox.Show("Выберите заявку для удаления.", "Внимание",
+                MessageBox.Show("Выберите заявку для закрытия.", "Внимание",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (SelectedApplication.Status != "Новая")
             {
-                MessageBox.Show("Удалить можно только заявку со статусом «Новая».", "Удаление невозможно",
+                MessageBox.Show("Закрыть можно только заявку со статусом «Новая».", "Действие недоступно",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            var confirm = MessageBox.Show($"Удалить заявку №{SelectedApplication.Id}?", "Подтверждение",
+            var confirm = MessageBox.Show($"Закрыть заявку №{SelectedApplication.Id}?", "Подтверждение",
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm != MessageBoxResult.Yes) return;
 
@@ -125,14 +139,12 @@ namespace TourAgency2018.Views.Pages
                 {
                     try
                     {
-                        var app = db.TourApplications
-                            .Include(a => a.Services)
-                            .FirstOrDefault(a => a.Id == SelectedApplication.Id);
+                        db.Configuration.AutoDetectChangesEnabled = true;
+
+                        var app = db.TourApplications.FirstOrDefault(a => a.Id == SelectedApplication.Id);
                         if (app == null) return;
 
-                        app.Services.Clear();
-
-                        db.TourApplications.Remove(app);
+                        app.Status = "Закрыта";
                         db.SaveChanges();
                         transaction.Commit();
                     }
@@ -150,7 +162,7 @@ namespace TourAgency2018.Views.Pages
             }
 
             LoadApplications();
-            MessageBox.Show("Заявка успешно удалена.", "Удаление", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Заявка закрыта.", "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -169,6 +181,12 @@ namespace TourAgency2018.Views.Pages
                 SearchTextBox.Text = "Поиск по клиенту или туру...";
                 SearchTextBox.Foreground = System.Windows.Media.Brushes.Gray;
             }
+        }
+
+        private void DetailButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.Button btn && btn.Tag is int id)
+                FrameService.Frame.Navigate(new ApplicationEditPage(id, readOnly: true));
         }
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e) => LoadApplications();

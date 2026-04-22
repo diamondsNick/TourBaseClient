@@ -23,6 +23,7 @@ namespace TourAgency2018.Views.Windows
     public partial class MainAppWindow : Window
     {
         private bool _allowRedactManager;
+        private bool _isClient;
 
         public MainAppWindow()
         {
@@ -34,7 +35,9 @@ namespace TourAgency2018.Views.Windows
 
             FrameService.SetFrame(MainAppFrame);
 
-            FrameService.Frame.Navigate(new Views.Pages.ToursPage());
+            FrameService.Frame.Navigate(_isClient
+                ? (System.Windows.Controls.Page)new Views.Pages.ApplicationsPage()
+                : new Views.Pages.ToursPage());
 
             MainAppFrame.Navigated += OnFrameNavigated;
         }
@@ -61,9 +64,19 @@ namespace TourAgency2018.Views.Windows
                     _allowRedactManager = true;
                     ClientsButton.Visibility = Visibility.Collapsed;
                     ApplicationsButton.Visibility = Visibility.Collapsed;
+                    ReviewsButton.Visibility = Visibility.Collapsed;
                     return;
                 case "Менеджер":
                     _allowRedactManager = false;
+                    ServicesButton.Visibility = Visibility.Collapsed;
+                    ReviewsButton.Visibility = Visibility.Collapsed;
+                    return;
+                case "Клиент":
+                    _isClient = true;
+                    _allowRedactManager = false;
+                    ToursButton.Visibility = Visibility.Collapsed;
+                    HotelsButton.Visibility = Visibility.Collapsed;
+                    ClientsButton.Visibility = Visibility.Collapsed;
                     ServicesButton.Visibility = Visibility.Collapsed;
                     return;
             }
@@ -96,7 +109,7 @@ namespace TourAgency2018.Views.Windows
             if (MainAppFrame.Content is ClientsPage)
                 allowShowingRedactingControls = true;
 
-            if (MainAppFrame.Content is ApplicationsPage)
+            if (MainAppFrame.Content is ApplicationsPage && !_isClient)
                 allowShowingRedactingControls = true;
 
             AddButton.Visibility = allowShowingRedactingControls ? Visibility.Visible : Visibility.Hidden;
@@ -127,6 +140,11 @@ namespace TourAgency2018.Views.Windows
         private void ServicesButton_Click(object sender, RoutedEventArgs e)
         {
             FrameService.Frame.Navigate(new ServicesPage());
+        }
+
+        private void ReviewsButton_Click(object sender, RoutedEventArgs e)
+        {
+            FrameService.Frame.Navigate(new ReviewsPage());
         }
 
         private void UserCabinet_Click(object sender, RoutedEventArgs e)
